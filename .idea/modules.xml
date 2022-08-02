@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/../../projects/ECG Heart/.idea/ECG Heart.iml" filepath="$PROJECT_DIR$/../../projects/ECG Heart/.idea/ECG Heart.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/ECGDemo.iml" filepath="$PROJECT_DIR$/.idea/ECGDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../Learning/Pyscript/.idea/Pyscript.iml" filepath="$PROJECT_DIR$/../../Learning/Pyscript/.idea/Pyscript.iml" />
     </modules>
   </component>
 </project>

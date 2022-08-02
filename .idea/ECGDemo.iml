@@ -8,6 +8,7 @@
     <orderEntry type="jdk" jdkName="Python 3.9 (flaskProject)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ECG Heart" />
+    <orderEntry type="module" module-name="Pyscript" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />

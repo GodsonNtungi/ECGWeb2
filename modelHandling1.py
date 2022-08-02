@@ -69,7 +69,11 @@ def delete_csv():
 
 def give_prediction(csv_location, model_location):
     data, pictures_name = read_Data(csv_location)
+    all_data=[]
     model = read_Model(model_location)
     pred, prob = predict(data, model)
     output = create_csv(data, pred, prob)
-    return output, pictures_name
+    for i in range(0,len(data.index)):
+        some_data = [output.iloc[i]['id'], output.iloc[i]['prediction'], output.iloc[i]['probability'], pictures_name[i]]
+        all_data.append(some_data)
+    return output,all_data

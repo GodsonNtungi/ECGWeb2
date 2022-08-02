@@ -5,10 +5,17 @@
     <title>Title</title>
 </head>
 <style>
-    .center{
+    body {
+        background-color: white;
+        color: red;
+        border: 180px solid rgb(185, 194, 226);
+        border-width: 400px;
+    }
+
+    center{
  margin: auto;
   width: 50%;
-  padding: 70px;
+  padding: 250px;
     }
     img {
   display: block;
@@ -19,10 +26,14 @@
 </style>
 <body>
 <div class="center">
-    <img src="/static/cardiactek2.jpg" s>
+    <img src="/static/cardiactek2.jpg" width="220" height="150>
+    <div>
  <form action = "http://localhost:5000/uploader" method = "POST"
          enctype = "multipart/form-data">
+
          <input type = "file" name = "file" />
+    </div>
+
          <input type = "submit"/>
       </form>
     </div>
