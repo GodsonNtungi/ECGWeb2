@@ -7,8 +7,7 @@
     <content url="file://$MODULE_DIR$" />
     <orderEntry type="jdk" jdkName="Python 3.9 (flaskProject)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="ECG Heart" />
-    <orderEntry type="module" module-name="Pyscript" />
+    <orderEntry type="module" module-name="Luigi" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Jinja2" />
