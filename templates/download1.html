@@ -111,8 +111,7 @@
         <h4> Type of beat :</h4>
             <div id="child">{{ result[1] }}</div>
             <hr>
-        <h4>Accuracy: </h4>
-        <div id="child"> {{ result[2] }}</div>
+        <h4>Accuracy:    {{ result[2] }} </h4>
         </div>
         <img src="{{url_for('static',filename ='graphs/'+result[3][0])}}",width="400" height="360">
     {% endfor %}
