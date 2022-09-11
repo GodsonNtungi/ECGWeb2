@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ECGDemo.iml" filepath="$PROJECT_DIR$/.idea/ECGDemo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../Learning/Luigi/.idea/Luigi.iml" filepath="$PROJECT_DIR$/../../Learning/Luigi/.idea/Luigi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../learning/Rest API fLASK/.idea/Rest API fLASK.iml" filepath="$PROJECT_DIR$/../../learning/Rest API fLASK/.idea/Rest API fLASK.iml" />
     </modules>
   </component>
 </project>
