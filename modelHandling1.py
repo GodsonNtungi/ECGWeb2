@@ -1,7 +1,7 @@
 import pandas as pd
 import joblib
 import os
-import sklearn
+import catboost
 import lxml
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
@@ -10,8 +10,7 @@ from flask import send_file
 from matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
 
 
-beats = {0: "ecotic beats", 1: "Supraventricular ectopic beats ", 2: "Ventricular ectopic beats",
-         3: "Fusion Beats", 4: " Unknown Beats"}
+beats = {0: "Normal", 1: "Abnormal"}
 
 
 def read_Data(csv_location):
@@ -46,7 +45,7 @@ def read_Data(csv_location):
         box.append(name_id)
         picture_name.append(box)
 
-        name = 'D:/Data Ml/Utilities/flaskProject/static/graphs/' + name
+        name = 'D:/Data Ml/projects/ECGWEB2/static/graphs/' + name
         fig.savefig(name)
         plt.close()
 
@@ -63,7 +62,7 @@ def predict(data, model):
     prob = model.predict_proba(data.iloc[0:, :186])
     probabilities = []
     for proba in prob:
-        probabilities.append(max(proba))
+        probabilities.append(round(max(proba),2))
     output = []
     for value in prediction:
         text = beats.get(value)
