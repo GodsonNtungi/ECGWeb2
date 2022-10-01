@@ -5,8 +5,10 @@ import sklearn
 import lxml
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 from flask import send_file
 from matplotlib.ticker import (AutoMinorLocator, MultipleLocator)
+
 
 beats = {0: "ecotic beats", 1: "Supraventricular ectopic beats ", 2: "Ventricular ectopic beats",
          3: "Fusion Beats", 4: " Unknown Beats"}
