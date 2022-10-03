@@ -58,7 +58,7 @@ def read_Model(model_location):
 
 
 def predict(data, model):
-    prediction = model.predict(data1)
+    prediction = model.predict(data)
     prob = model.predict_proba(data)
     probabilities = []
     for proba in prob:
