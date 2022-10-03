@@ -58,8 +58,8 @@ def read_Model(model_location):
 
 
 def predict(data, model):
-    prediction = model.predict(data.iloc[0:, :186])
-    prob = model.predict_proba(data.iloc[0:, :186])
+    prediction = model.predict(data)
+    prob = model.predict_proba(data)
     probabilities = []
     for proba in prob:
         probabilities.append(round(max(proba),2))
