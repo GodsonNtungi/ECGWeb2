@@ -2,7 +2,7 @@ import pandas as pd
 import joblib
 import os
 import catboost
-import lxml
+#import lxml
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 plt.switch_backend('agg')
@@ -45,7 +45,7 @@ def read_Data(csv_location):
         box.append(name_id)
         picture_name.append(box)
 
-        name = 'D:/Data Ml/projects/ECGWEB2/static/graphs/' + name
+        name = '/home/godson/Projects/Others/Cardiak Tek/ECGWeb2/static/graphs/' + name
         fig.savefig(name)
         plt.close()
 
