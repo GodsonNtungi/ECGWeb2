@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: ecgweb2
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=production
+      - SECRET_KEY=${SECRET_KEY:-change-me-in-production}
+      - DATABASE_URL=sqlite:///ecgweb.db
+    volumes:
+      - ./uploads:/app/uploads
+      - ./app/static/graphs:/app/app/static/graphs
+      - ./logs:/app/logs
+      - ./ecgweb.db:/app/ecgweb.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: PostgreSQL database for production
+  # db:
+  #   image: postgres:15-alpine
+  #   container_name: ecgweb2_db
+  #   environment:
+  #     - POSTGRES_DB=ecgweb
+  #     - POSTGRES_USER=ecgweb
+  #     - POSTGRES_PASSWORD=secure-password-here
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+
+# volumes:
+#   postgres_data:

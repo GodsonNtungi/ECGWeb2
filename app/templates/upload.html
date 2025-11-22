@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}Upload ECG - CardiacTek{% endblock %}
+
+{% block content %}
+<section class="upload-section">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-upload"></i> Upload ECG Data</h1>
+            <p>Upload your CSV file containing ECG heartbeat data for analysis</p>
+        </div>
+
+        <div class="upload-container">
+            <div class="upload-card">
+                <form method="POST" action="{{ url_for('main.upload') }}" enctype="multipart/form-data" id="uploadForm">
+                    <div class="file-upload-area" id="dropZone">
+                        <input type="file" name="file" id="fileInput" accept=".csv" required hidden>
+
+                        <div class="upload-content" id="uploadContent">
+                            <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                            <h3>Drop your CSV file here</h3>
+                            <p>or</p>
+                            <button type="button" class="btn btn-outline" onclick="document.getElementById('fileInput').click()">
+                                <i class="fas fa-folder-open"></i> Browse Files
+                            </button>
+                            <small class="upload-hint">Maximum file size: 50MB | Format: CSV</small>
+                        </div>
+
+                        <div class="file-preview" id="filePreview" style="display: none;">
+                            <i class="fas fa-file-csv file-icon"></i>
+                            <div class="file-details">
+                                <h4 id="fileName"></h4>
+                                <p id="fileSize"></p>
+                            </div>
+                            <button type="button" class="btn-remove" onclick="removeFile()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="upload-actions">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" disabled>
+                            <i class="fas fa-brain"></i> Analyze ECG
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Upload Progress -->
+                <div class="upload-progress" id="uploadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <p class="progress-text" id="progressText">Uploading... 0%</p>
+                </div>
+            </div>
+
+            <div class="upload-info">
+                <h3><i class="fas fa-info-circle"></i> File Requirements</h3>
+                <div class="info-card">
+                    <h4>CSV Format</h4>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Each row represents one heartbeat</li>
+                        <li><i class="fas fa-check"></i> 186 data points per row (columns)</li>
+                        <li><i class="fas fa-check"></i> Numeric values only</li>
+                        <li><i class="fas fa-check"></i> Optional header row</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h4>Sample Data</h4>
+                    <p>Don't have ECG data? Try our sample files:</p>
+                    <div class="sample-files">
+                        <span class="badge"><i class="fas fa-file"></i> smalldata.csv (30 beats)</span>
+                        <span class="badge"><i class="fas fa-file"></i> mediumdata.csv (1.2K beats)</span>
+                        <span class="badge"><i class="fas fa-file"></i> largedata.csv (350K beats)</span>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h4>What Happens Next?</h4>
+                    <ol>
+                        <li>File is validated and uploaded</li>
+                        <li>AI model analyzes each heartbeat</li>
+                        <li>ECG graphs are generated</li>
+                        <li>Results displayed with statistics</li>
+                        <li>Export results as CSV</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const uploadContent = document.getElementById('uploadContent');
+const filePreview = document.getElementById('filePreview');
+const submitBtn = document.getElementById('submitBtn');
+const uploadProgress = document.getElementById('uploadProgress');
+const uploadForm = document.getElementById('uploadForm');
+
+// Drag and drop handlers
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('drag-over');
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        fileInput.files = files;
+        handleFileSelect(files[0]);
+    }
+});
+
+// File input change handler
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        handleFileSelect(e.target.files[0]);
+    }
+});
+
+function handleFileSelect(file) {
+    if (!file.name.endsWith('.csv')) {
+        alert('Please select a CSV file');
+        return;
+    }
+
+    const fileSize = (file.size / 1024).toFixed(2);
+    const fileSizeLabel = fileSize < 1024 ? fileSize + ' KB' : (fileSize / 1024).toFixed(2) + ' MB';
+
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = fileSizeLabel;
+
+    uploadContent.style.display = 'none';
+    filePreview.style.display = 'flex';
+    submitBtn.disabled = false;
+}
+
+function removeFile() {
+    fileInput.value = '';
+    uploadContent.style.display = 'block';
+    filePreview.style.display = 'none';
+    submitBtn.disabled = true;
+}
+
+// Form submission with progress
+uploadForm.addEventListener('submit', (e) => {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analyzing...';
+
+    // Show progress (simulated for large files)
+    if (fileInput.files[0] && fileInput.files[0].size > 1024 * 1024) {
+        uploadProgress.style.display = 'block';
+        simulateProgress();
+    }
+});
+
+function simulateProgress() {
+    let progress = 0;
+    const interval = setInterval(() => {
+        progress += Math.random() * 15;
+        if (progress > 90) progress = 90;
+
+        document.getElementById('progressFill').style.width = progress + '%';
+        document.getElementById('progressText').textContent = `Processing... ${Math.round(progress)}%`;
+
+        if (progress >= 90) {
+            clearInterval(interval);
+            document.getElementById('progressText').textContent = 'Finalizing analysis...';
+        }
+    }, 300);
+}
+</script>
+{% endblock %}
+{% endblock %}
