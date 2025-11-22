@@ -64,3 +64,4 @@ htmlcov/
 # Backup files
 *.bak
 *.tmp
+catboost_info/
