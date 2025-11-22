@@ -1,0 +1,19 @@
+Model Training Info
+============================================================
+Timestamp: 2025-11-22 20:47:33.832370
+Model type: CatBoost Classifier
+Training samples: 4000
+Test samples: 1000
+Best iteration: 695
+
+Model Parameters:
+  iterations: 1000
+  learning_rate: 0.03
+  depth: 8
+  l2_leaf_reg: 3
+  loss_function: Logloss
+  random_seed: 42
+  verbose: 100
+  eval_metric: AUC
+  task_type: CPU
+  early_stopping_rounds: 50

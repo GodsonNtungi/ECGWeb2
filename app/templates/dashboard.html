@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CardiacTek{% endblock %}
+
+{% block content %}
+<section class="dashboard-section">
+    <div class="container">
+        <div class="page-header">
+            <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+            <p>Welcome back, {{ current_user.username }}!</p>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-cards">
+            <div class="stat-card-dashboard">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-file-medical"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_analyses }}</h3>
+                    <p>Total Analyses</p>
+                </div>
+            </div>
+
+            <div class="stat-card-dashboard">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_beats }}</h3>
+                    <p>Beats Analyzed</p>
+                </div>
+            </div>
+
+            <div class="stat-card-dashboard">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_normal }}</h3>
+                    <p>Normal Beats</p>
+                </div>
+            </div>
+
+            <div class="stat-card-dashboard">
+                <div class="stat-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_abnormal }}</h3>
+                    <p>Abnormal Beats</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="dashboard-actions">
+            <a href="{{ url_for('main.upload') }}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> New Analysis
+            </a>
+        </div>
+
+        <!-- Analysis History -->
+        <div class="analysis-history">
+            <div class="section-header">
+                <h2><i class="fas fa-history"></i> Analysis History</h2>
+            </div>
+
+            {% if analyses.items %}
+                <div class="analysis-table-container">
+                    <table class="analysis-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Filename</th>
+                                <th>Date</th>
+                                <th>Total Beats</th>
+                                <th>Normal</th>
+                                <th>Abnormal</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for analysis in analyses.items %}
+                                <tr>
+                                    <td><span class="badge-id">#{{ analysis.id }}</span></td>
+                                    <td>
+                                        <i class="fas fa-file-csv"></i>
+                                        {{ analysis.filename }}
+                                    </td>
+                                    <td>{{ analysis.upload_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>{{ analysis.total_beats }}</td>
+                                    <td>
+                                        <span class="badge-success">
+                                            {{ analysis.normal_count }} ({{ analysis.normal_percentage }}%)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge-danger">
+                                            {{ analysis.abnormal_count }} ({{ analysis.abnormal_percentage }}%)
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if analysis.status == 'completed' %}
+                                            <span class="badge-success"><i class="fas fa-check"></i> Completed</span>
+                                        {% elif analysis.status == 'processing' %}
+                                            <span class="badge-warning"><i class="fas fa-spinner fa-spin"></i> Processing</span>
+                                        {% else %}
+                                            <span class="badge-danger"><i class="fas fa-times"></i> Failed</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons">
+                                            <a href="{{ url_for('main.results', analysis_id=analysis.id) }}" class="btn-action" title="View Results">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <a href="{{ url_for('main.download', analysis_id=analysis.id) }}" class="btn-action" title="Download CSV">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <form method="POST" action="{{ url_for('main.delete_analysis', analysis_id=analysis.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this analysis?');">
+                                                <button type="submit" class="btn-action btn-danger" title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if analyses.has_prev or analyses.has_next %}
+                    <div class="pagination">
+                        {% if analyses.has_prev %}
+                            <a href="{{ url_for('main.dashboard', page=analyses.prev_num) }}" class="page-btn">
+                                <i class="fas fa-chevron-left"></i> Previous
+                            </a>
+                        {% endif %}
+
+                        <span class="page-info">
+                            Page {{ analyses.page }} of {{ analyses.pages }}
+                        </span>
+
+                        {% if analyses.has_next %}
+                            <a href="{{ url_for('main.dashboard', page=analyses.next_num) }}" class="page-btn">
+                                Next <i class="fas fa-chevron-right"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>No analyses yet</h3>
+                    <p>Upload your first ECG file to get started!</p>
+                    <a href="{{ url_for('main.upload') }}" class="btn btn-primary">
+                        <i class="fas fa-upload"></i> Upload ECG Data
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

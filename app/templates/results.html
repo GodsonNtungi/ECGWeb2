@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Analysis Results - CardiacTek{% endblock %}
+
+{% block content %}
+<section class="results-section">
+    <div class="container">
+        <!-- Header -->
+        <div class="results-header">
+            <div class="results-title">
+                <a href="{{ url_for('main.dashboard') }}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+                <h1><i class="fas fa-chart-pie"></i> Analysis Results</h1>
+                <p class="results-subtitle">{{ analysis.filename }}</p>
+            </div>
+            <div class="results-actions">
+                <a href="{{ url_for('main.download', analysis_id=analysis.id) }}" class="btn btn-primary">
+                    <i class="fas fa-download"></i> Download CSV
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-section">
+            <div class="summary-card">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-heartbeat"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Total Beats</h3>
+                    <p class="summary-value">{{ analysis.total_beats }}</p>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Normal Beats</h3>
+                    <p class="summary-value">{{ analysis.normal_count }}</p>
+                    <span class="summary-percentage">{{ analysis.normal_percentage }}%</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Abnormal Beats</h3>
+                    <p class="summary-value">{{ analysis.abnormal_count }}</p>
+                    <span class="summary-percentage">{{ analysis.abnormal_percentage }}%</span>
+                </div>
+            </div>
+
+            <div class="summary-card">
+                <div class="summary-icon" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+                    <i class="fas fa-calendar"></i>
+                </div>
+                <div class="summary-content">
+                    <h3>Analyzed On</h3>
+                    <p class="summary-date">{{ analysis.upload_date.strftime('%B %d, %Y') }}</p>
+                    <span class="summary-time">{{ analysis.upload_date.strftime('%I:%M %p') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Visual Chart -->
+        <div class="chart-section">
+            <h2><i class="fas fa-chart-bar"></i> Analysis Overview</h2>
+            <div class="chart-container">
+                <canvas id="analysisChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Individual Results -->
+        <div class="individual-results">
+            <h2><i class="fas fa-list"></i> Individual Beat Analysis</h2>
+
+            <div class="results-grid">
+                {% for result in results.items %}
+                    <div class="result-card">
+                        <div class="result-header">
+                            <span class="beat-id">Beat #{{ result.beat_index }}</span>
+                            {% if result.prediction == 'Normal' %}
+                                <span class="badge-success">
+                                    <i class="fas fa-check"></i> {{ result.prediction }}
+                                </span>
+                            {% else %}
+                                <span class="badge-danger">
+                                    <i class="fas fa-exclamation"></i> {{ result.prediction }}
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="result-graph">
+                            <img src="{{ url_for('static', filename='graphs/' + result.graph_path) }}"
+                                 alt="ECG Graph for Beat {{ result.beat_index }}"
+                                 loading="lazy">
+                        </div>
+
+                        <div class="result-footer">
+                            <div class="confidence-bar">
+                                <div class="confidence-label">
+                                    <span>Confidence</span>
+                                    <span class="confidence-value">{{ (result.confidence * 100)|round(1) }}%</span>
+                                </div>
+                                <div class="progress-bar-small">
+                                    <div class="progress-fill-small" style="width: {{ (result.confidence * 100)|round(1) }}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if results.has_prev or results.has_next %}
+                <div class="pagination">
+                    {% if results.has_prev %}
+                        <a href="{{ url_for('main.results', analysis_id=analysis.id, page=results.prev_num) }}" class="page-btn">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                    {% endif %}
+
+                    <span class="page-info">
+                        Page {{ results.page }} of {{ results.pages }} ({{ results.total }} beats)
+                    </span>
+
+                    {% if results.has_next %}
+                        <a href="{{ url_for('main.results', analysis_id=analysis.id, page=results.next_num) }}" class="page-btn">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// Pie Chart
+const ctx = document.getElementById('analysisChart').getContext('2d');
+const chart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Normal Beats', 'Abnormal Beats'],
+        datasets: [{
+            data: [{{ analysis.normal_count }}, {{ analysis.abnormal_count }}],
+            backgroundColor: [
+                'rgba(79, 172, 254, 0.8)',
+                'rgba(250, 112, 154, 0.8)'
+            ],
+            borderColor: [
+                'rgba(79, 172, 254, 1)',
+                'rgba(250, 112, 154, 1)'
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 14,
+                        family: 'Inter'
+                    },
+                    padding: 20
+                }
+            },
+            title: {
+                display: true,
+                text: 'Beat Classification Distribution',
+                font: {
+                    size: 18,
+                    family: 'Inter',
+                    weight: 'bold'
+                },
+                padding: 20
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}
